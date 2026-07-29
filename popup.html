@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سازنده رمز عبور</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">🔐</div>
+      <h1>سازنده رمز عبور</h1>
+      <p class="subtitle">Password Generator</p>
+    </div>
+
+    <!-- Password Display -->
+    <div class="password-box">
+      <input type="text" id="password" readonly placeholder="روی دکمه کلیک کنید...">
+      <button id="copyBtn" class="copy-btn" title="کپی رمز">📋</button>
+      <button id="refreshBtn" class="refresh-btn" title="ساخت رمز جدید">🔄</button>
+    </div>
+
+    <!-- Strength Bar -->
+    <div class="strength-container">
+      <div class="strength-bar">
+        <div id="strengthFill" class="strength-fill"></div>
+      </div>
+      <span id="strengthText" class="strength-text">---</span>
+    </div>
+
+    <!-- Length Slider -->
+    <div class="option-group">
+      <label class="option-label">
+        <span>طول رمز عبور</span>
+        <span id="lengthValue" class="badge">16</span>
+      </label>
+      <input type="range" id="lengthSlider" min="4" max="128" value="16" class="slider">
+      <div class="slider-labels">
+        <span>4</span>
+        <span>128</span>
+      </div>
+    </div>
+
+    <!-- Options -->
+    <div class="options-grid">
+      <label class="option-item">
+        <input type="checkbox" id="optUppercase" checked>
+        <span class="checkmark"></span>
+        <span>حروف بزرگ (A-Z)</span>
+      </label>
+      <label class="option-item">
+        <input type="checkbox" id="optLowercase" checked>
+        <span class="checkmark"></span>
+        <span>حروف کوچک (a-z)</span>
+      </label>
+      <label class="option-item">
+        <input type="checkbox" id="optNumbers" checked>
+        <span class="checkmark"></span>
+        <span>اعداد (0-9)</span>
+      </label>
+      <label class="option-item">
+        <input type="checkbox" id="optSymbols" checked>
+        <span class="checkmark"></span>
+        <span>نمادها (!@#$%...)</span>
+      </label>
+      <label class="option-item">
+        <input type="checkbox" id="optNoAmbiguous">
+        <span class="checkmark"></span>
+        <span>بدون حروف مبهم (0OlI1)</span>
+      </label>
+      <label class="option-item">
+        <input type="checkbox" id="optNoDuplicate">
+        <span class="checkmark"></span>
+        <span>بدون تکرار کاراکتر</span>
+      </label>
+      <label class="option-item">
+        <input type="checkbox" id="optNoSequential">
+        <span class="checkmark"></span>
+        <span>بدون ترتیب پشت سر هم</span>
+      </label>
+      <label class="option-item">
+        <input type="checkbox" id="optPronounceable">
+        <span class="checkmark"></span>
+        <span>قابل تلفظ (خوانا)</span>
+      </label>
+    </div>
+
+    <!-- Custom Excludes -->
+    <div class="option-group">
+      <label class="option-label">کاراکترهای منفی (اختیاری)</label>
+      <input type="text" id="excludeChars" class="text-input" placeholder="مثلاً: @#$%...">
+    </div>
+
+    <!-- Generate Button -->
+    <button id="generateBtn" class="generate-btn">
+      ⚡ ساخت رمز عبور
+    </button>
+
+    <!-- History -->
+    <div class="history-section">
+      <div class="history-header">
+        <span>📜 تاریخچه اخیر</span>
+        <button id="clearHistory" class="clear-btn">پاک کردن</button>
+      </div>
+      <div id="historyList" class="history-list">
+        <p class="empty-history">هنوز رمزی ساخته نشده</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>ساخته شده توسط <a href="https://t.me/AnishtayiN" target="_blank">AnishtayiN</a></p>
+      <p class="footer-link">📱 <a href="https://t.me/AnishtayiN" target="_blank">@AnishtayiN</a></p>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
