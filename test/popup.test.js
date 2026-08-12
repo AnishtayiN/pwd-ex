@@ -28,7 +28,7 @@ function loadGenerator() {
   var ids = [
     'password', 'lengthSlider', 'lengthValue', 'strengthFill', 'strengthText',
     'generateBtn', 'copyBtn', 'refreshBtn', 'excludeChars', 'historyList',
-    'clearHistory', 'optUppercase', 'optLowercase', 'optNumbers', 'optSymbols',
+    'clearHistory', 'entropyValue', 'crackTimeValue', 'optUppercase', 'optLowercase', 'optNumbers', 'optSymbols',
     'optNoAmbiguous', 'optNoDuplicate', 'optNoSequential', 'optPronounceable'
   ];
 
@@ -57,6 +57,7 @@ function loadGenerator() {
     document: {
       getElementById: function (id) { return elements[id]; },
       querySelector: function () { return null; },
+      querySelectorAll: function () { return []; },
       createElement: function () { return createElement('created'); },
       body: createElement('body'),
       execCommand: function () { return true; }
@@ -117,6 +118,14 @@ function hasDuplicate(str) {
   t.elements.optPronounceable.checked = true;
   assert.strictEqual(t.api.generatePassword(), '');
   assert(t.alerts.length > 0);
+}());
+
+(function testStrengthMetadata() {
+  var t = loadGenerator();
+  var strength = t.api.calculateStrength('Abcdef123!@#4567');
+  assert(strength.entropy > 100);
+  assert.strictEqual(typeof strength.crackTime, 'string');
+  assert.notStrictEqual(strength.crackTime, '---');
 }());
 
 (function testStrengthWithoutMathLog2() {
