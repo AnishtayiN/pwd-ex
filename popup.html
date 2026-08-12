@@ -30,6 +30,37 @@
       <span id="strengthText" class="strength-text">---</span>
     </div>
 
+    <!-- Security Snapshot -->
+    <div class="security-panel" aria-live="polite">
+      <div class="security-stat">
+        <span class="stat-label">آنتروپی</span>
+        <strong id="entropyValue">0 بیت</strong>
+      </div>
+      <div class="security-stat">
+        <span class="stat-label">حدس آفلاین</span>
+        <strong id="crackTimeValue">---</strong>
+      </div>
+    </div>
+
+    <!-- Pro Profiles -->
+    <div class="profile-deck" aria-label="پروفایل‌های آماده امنیتی">
+      <button type="button" class="profile-card" data-profile="vault">
+        <span class="profile-icon">🛡️</span>
+        <strong>Vault Max</strong>
+        <small>۳۲ کاراکتر، همه‌چیز روشن</small>
+      </button>
+      <button type="button" class="profile-card" data-profile="readable">
+        <span class="profile-icon">🧠</span>
+        <strong>Readable</strong>
+        <small>خوانا، بدون کاراکتر مبهم</small>
+      </button>
+      <button type="button" class="profile-card" data-profile="pin">
+        <span class="profile-icon">🔢</span>
+        <strong>PIN Pro</strong>
+        <small>۱۲ رقم بدون تکرار</small>
+      </button>
+    </div>
+
     <!-- Length Slider -->
     <div class="option-group">
       <label class="option-label">
@@ -37,6 +68,11 @@
         <span id="lengthValue" class="badge">16</span>
       </label>
       <input type="range" id="lengthSlider" min="4" max="128" value="16" class="slider">
+      <div class="preset-row" aria-label="پیشنهادهای سریع طول رمز">
+        <button type="button" class="preset-btn" data-length="16">سریع 16</button>
+        <button type="button" class="preset-btn" data-length="24">امن 24</button>
+        <button type="button" class="preset-btn" data-length="32">خفن 32</button>
+      </div>
       <div class="slider-labels">
         <span>4</span>
         <span>128</span>
@@ -97,6 +133,15 @@
     <button id="generateBtn" class="generate-btn">
       ⚡ ساخت رمز عبور
     </button>
+
+    <!-- Security Checklist -->
+    <div class="audit-section">
+      <div class="audit-header">
+        <span>🧪 چک‌لیست امنیت</span>
+        <span id="auditScore" class="audit-score">0/5</span>
+      </div>
+      <div id="auditList" class="audit-list"></div>
+    </div>
 
     <!-- History -->
     <div class="history-section">

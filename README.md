@@ -1,177 +1,164 @@
-# 🔐 Password Generator
+# 🔐 Password Generator Pro — سازنده رمز عبور خفن
 
-> A powerful Chrome extension for generating secure, customizable passwords — built with ❤️ by [AnishtayiN](https://t.me/AnishtayiN)
+> یک اکستنشن سبک، سریع و کاملاً لوکال برای ساخت رمزهای قوی، خوانا و قابل سفارشی‌سازی — ساخته شده با ❤️ توسط [AnishtayiN](https://t.me/AnishtayiN)
 
 ![Chrome](https://img.shields.io/badge/Chrome-49%2B-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)
 ![Manifest V2](https://img.shields.io/badge/Manifest-V2-yellow?style=for-the-badge)
+![Vanilla JS](https://img.shields.io/badge/Vanilla-JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 ---
 
-## ✨ Features
+## 🚀 چرا خفنه؟
 
-| Feature | Description |
-|---------|-------------|
-| 🔤 **Uppercase Letters** | `A-Z` characters |
-| 🔡 **Lowercase Letters** | `a-z` characters |
-| 🔢 **Numbers** | `0-9` digits |
-| 🔣 **Symbols** | `!@#$%^&*()` and more |
-| 📏 **Custom Length** | 4 to 128 characters |
-| 🚫 **No Ambiguous Chars** | Excludes `0OolI1` |
-| 🔁 **No Duplicates** | Each character used only once |
-| 📐 **No Sequential** | Prevents `abc`, `123` patterns |
-| 🗣️ **Pronounceable** | Human-readable passwords |
-| ✏️ **Custom Excludes** | Remove specific characters |
-| 📊 **Strength Indicator** | Real-time entropy-based analysis |
-| 📜 **Password History** | Last 20 passwords saved |
-| 📋 **One-Click Copy** | Instant clipboard copy |
+این افزونه فقط یک generator ساده نیست؛ یک داشبورد کوچک امنیت رمز عبور است:
+
+- 🛡️ **پروفایل‌های آماده امنیتی** برای ساخت سریع رمز مناسب سناریوهای مختلف
+- 📊 **Security Snapshot** با نمایش آنتروپی و تخمین زمان حدس آفلاین
+- 🧪 **چک‌لیست امنیتی زنده** برای دیدن نقاط قوت و ضعف رمز
+- ⚡ **تولید زنده** هنگام تغییر طول، گزینه‌ها یا presetها
+- 🔐 **Randomness امن** با `crypto.getRandomValues()`
+- 🧠 **حالت قابل تلفظ** برای رمزهای خواناتر و به‌یادماندنی‌تر
+- 📜 **تاریخچه محلی** با کپی سریع رمزهای اخیر
 
 ---
 
-## 🚀 Installation
+## ✨ امکانات اصلی
 
-### Method 1: Manual Install (Developer Mode)
+| قابلیت | توضیح |
+|--------|-------|
+| 🛡️ **Vault Max** | پروفایل ۳۲ کاراکتری با ترکیب کامل و حذف الگوهای ترتیبی |
+| 🧠 **Readable** | رمز خواناتر با حروف قابل تلفظ و حذف کاراکترهای مبهم |
+| 🔢 **PIN Pro** | PIN عددی ۱۲ رقمی بدون تکرار و بدون ترتیب پشت سر هم |
+| 📏 **طول قابل تنظیم** | ساخت رمز از ۴ تا ۱۲۸ کاراکتر |
+| ⚡ **Preset سریع** | انتخاب فوری طول‌های 16، 24 و 32 |
+| 🔤 **Character Sets** | حروف بزرگ، کوچک، اعداد و نمادها |
+| 🚫 **No Ambiguous** | حذف کاراکترهای شبیه هم مثل `0OIl1` |
+| 🔁 **No Duplicate** | جلوگیری از تکرار کاراکترها |
+| 📐 **No Sequential** | جلوگیری از الگوهایی مثل `abc` و `123` |
+| ✏️ **Custom Excludes** | حذف کاراکترهای دلخواه توسط کاربر |
+| 📋 **One-Click Copy** | کپی سریع رمز اصلی یا آیتم‌های تاریخچه |
+| 📜 **Local History** | نگهداری ۲۰ رمز اخیر فقط در مرورگر شما |
 
-1. **Download** this repository as a ZIP file
-2. **Extract** the ZIP to a folder on your computer
-3. Open Chrome and go to `chrome://extensions`
-4. Enable **Developer mode** (toggle in top-right corner)
-5. Click **Load unpacked**
-6. Select the extracted folder
-7. Done! 🎉
+---
 
-### Method 2: From Source Code
+## 🖼️ تجربه کاربری
+
+- تم تیره cyberpunk با رنگ‌های cyan و green
+- کارت‌های امنیتی نئونی با micro-interaction
+- رابط راست‌به‌چپ فارسی و متن‌های قابل فهم
+- نمایش لحظه‌ای قدرت رمز، آنتروپی، تخمین زمان حدس و checklist
+- بدون dependency و بدون build step
+
+---
+
+## 📦 نصب
+
+### روش ۱: نصب دستی در Chrome / Edge / Brave
+
+1. پروژه را دانلود یا clone کنید.
+2. وارد صفحه `chrome://extensions` شوید.
+3. گزینه **Developer mode** را روشن کنید.
+4. روی **Load unpacked** کلیک کنید.
+5. پوشه پروژه را انتخاب کنید.
+6. افزونه آماده استفاده است 🎉
+
+### روش ۲: از سورس
 
 ```bash
 git clone https://github.com/AnishtayiN/pwd-ex.git
+cd pwd-ex
 ```
 
-Then follow steps 3-7 from Method 1.
+سپس مراحل نصب دستی را انجام دهید.
 
 ---
 
-## 📖 How to Use
+## 🧭 راهنمای استفاده سریع
 
-1. Click the **extension icon** 🔐 in your Chrome toolbar
-2. Adjust the **length slider** (4-128 characters)
-3. Select which **character types** to include
-4. Click **⚡ Generate Password**
-5. Click **📋** to copy to clipboard
-6. Check the **strength indicator** for security level
-
----
-
-## 🎯 Advanced Options
-
-### Exclude Ambiguous Characters
-Enable this to remove characters that look similar: `0`, `O`, `o`, `l`, `I`, `1`. Perfect for passwords you need to **read aloud**.
-
-### No Duplicate Characters
-Each character appears **only once**. Great for **PIN codes** or **short passwords** where you want maximum uniqueness.
-
-### No Sequential Characters
-Prevents patterns like `abc`, `xyz`, `123`, `987`. Keeps passwords **harder to guess**.
-
-### Pronounceable Mode
-Generates **syllable-based** passwords like `BaKuMoTa` that are easier to **remember** but still secure.
-
-### Custom Excludes
-Type specific characters you want to **remove** from the password (e.g., characters that conflict with your system).
+1. روی آیکون افزونه کلیک کنید.
+2. یکی از پروفایل‌های **Vault Max**، **Readable** یا **PIN Pro** را بزنید — یا تنظیمات را دستی تغییر دهید.
+3. قدرت رمز را از نوار، آنتروپی و چک‌لیست بررسی کنید.
+4. روی 📋 بزنید و رمز را کپی کنید.
+5. اگر رمز دیگری می‌خواهید، دکمه 🔄 یا ⚡ را بزنید.
 
 ---
 
-## 🔒 Security
+## 🔒 مدل امنیتی
 
-- Uses **`crypto.getRandomValues()`** for cryptographic randomness
-- Falls back to **`msCrypto`** for older browsers
-- All generation happens **locally** — nothing is sent to any server
-- Password history is stored **only in your browser**
+- همه چیز **روی دستگاه شما** انجام می‌شود.
+- رمزها به هیچ سروری ارسال نمی‌شوند.
+- تولید تصادفی از **Web Crypto API** استفاده می‌کند.
+- تاریخچه فقط در storage مرورگر ذخیره می‌شود.
+- تخمین crack time یک شاخص آموزشی است و جایگزین سیاست امنیتی سازمانی نیست.
 
 ---
 
-## 📁 Project Structure
+## 🧪 تست
 
+این پروژه با Node.js و بدون dependency تست می‌شود:
+
+```bash
+node test/popup.test.js
 ```
+
+برای بررسی whitespace و patch:
+
+```bash
+git diff --check
+```
+
+---
+
+## 📁 ساختار پروژه
+
+```text
 pwd-ex/
 ├── manifest.json          # Chrome extension manifest (V2)
-├── popup.html             # Extension popup UI
-├── popup.js               # Password generation logic
-├── style.css              # Dark theme styling
+├── popup.html             # UI افزونه
+├── popup.js               # منطق تولید رمز، قدرت، پروفایل‌ها و تاریخچه
+├── style.css              # استایل cyberpunk و responsive popup
+├── test/
+│   └── popup.test.js      # تست‌های منطق generator
 ├── icons/
-│   ├── icon16.png         # 16x16 icon
-│   ├── icon48.png         # 48x48 icon
-│   └── icon128.png        # 128x128 icon
-└── README.md              # This file
+│   ├── icon16.png
+│   ├── icon48.png
+│   └── icon128.png
+└── README.md
 ```
 
 ---
 
-## 🖥️ Compatibility
+## 🧰 Tech Stack
 
-| Browser | Supported |
-|---------|-----------|
-| Chrome 49+ | ✅ |
-| Chrome 50+ | ✅ |
-| Chrome 60+ | ✅ |
-| Chrome 80+ | ✅ |
-| Chrome 100+ | ✅ |
-| Edge (Chromium) | ✅ |
-| Brave | ✅ |
-| Opera | ✅ |
-| Vivaldi | ✅ |
-
-> Uses **Manifest V2** for maximum compatibility with older Chrome versions.
+- **HTML5** برای ساختار popup
+- **CSS3** برای تم نئونی و micro-interactions
+- **Vanilla JavaScript** برای سرعت بالا و سازگاری گسترده
+- **Manifest V2** برای پشتیبانی از Chrome 49+
+- **Web Crypto API** برای randomness امن
 
 ---
 
-## 🎨 Screenshots
+## 🤝 مشارکت
 
-The extension features a beautiful **dark cyberpunk theme** with:
-- 🌊 Cyan gradient accents
-- 📊 Animated strength bar
-- 🎯 Smooth micro-interactions
-- 📱 Clean, modern RTL layout
-
----
-
-## 🛠️ Tech Stack
-
-- **HTML5** — Structure
-- **CSS3** — Dark gradient theme with animations
-- **Vanilla JavaScript** — Zero dependencies, maximum performance
-- **Manifest V2** — Wide Chrome compatibility
-- **Web Crypto API** — Cryptographically secure randomness
+1. Fork کنید.
+2. branch جدید بسازید: `git checkout -b feature/my-awesome-change`
+3. تغییرات را commit کنید.
+4. تست‌ها را اجرا کنید.
+5. Pull Request باز کنید.
 
 ---
 
-## 🤝 Contributing
+## 📄 مجوز
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+این پروژه با مجوز MIT منتشر شده است. جزئیات در فایل [LICENSE](LICENSE) موجود است.
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
+## 👨‍💻 سازنده
 
 **AnishtayiN** — [@AnishtayiN](https://t.me/AnishtayiN)
 
----
+اگر پروژه برات مفید بود، ⭐ دادن به repo یادت نره!
 
-## ⭐ Support
-
-If this extension helped you, give it a ⭐ on GitHub and share it with your friends!
-
-[![Telegram](https://img.shields.io/badge/Telegram-Contact-blue?style=for-the-badge&logo=telegram)](https://t.me/AnishtayiN)
-
----
-
-<p align="center">Made with ❤️ by <a href="https://t.me/AnishtayiN">AnishtayiN</a></p>
+<p align="center">ساخته شده با ❤️ توسط <a href="https://t.me/AnishtayiN">AnishtayiN</a></p>
