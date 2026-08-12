@@ -26,18 +26,12 @@
   var lengthValue = document.getElementById('lengthValue');
   var strengthFill = document.getElementById('strengthFill');
   var strengthText = document.getElementById('strengthText');
-  var entropyValue = document.getElementById('entropyValue');
-  var crackTimeValue = document.getElementById('crackTimeValue');
   var generateBtn = document.getElementById('generateBtn');
   var copyBtn = document.getElementById('copyBtn');
   var refreshBtn = document.getElementById('refreshBtn');
   var excludeInput = document.getElementById('excludeChars');
   var historyList = document.getElementById('historyList');
   var clearHistoryBtn = document.getElementById('clearHistory');
-  var presetButtons = document.querySelectorAll ? document.querySelectorAll('.preset-btn') : [];
-  var profileButtons = document.querySelectorAll ? document.querySelectorAll('.profile-card') : [];
-  var auditList = document.getElementById('auditList');
-  var auditScore = document.getElementById('auditScore');
 
   var optUppercase = document.getElementById('optUppercase');
   var optLowercase = document.getElementById('optLowercase');
@@ -50,11 +44,6 @@
 
   var history = [];
   var MAX_HISTORY = 20;
-  var PROFILES = {
-    vault: { length: 32, uppercase: true, lowercase: true, numbers: true, symbols: true, noAmbiguous: true, noDuplicate: false, noSequential: true, pronounceable: false },
-    readable: { length: 20, uppercase: true, lowercase: true, numbers: true, symbols: false, noAmbiguous: true, noDuplicate: false, noSequential: true, pronounceable: true },
-    pin: { length: 12, uppercase: false, lowercase: false, numbers: true, symbols: false, noAmbiguous: false, noDuplicate: true, noSequential: true, pronounceable: false }
-  };
 
   // ====== Secure Random (fallback for old Chrome) ======
   function secureRandom(max) {
@@ -267,41 +256,8 @@
   }
 
   // ====== Calculate Password Strength ======
-  function estimatePoolSize(password) {
-    var poolSize = 0;
-    if (/[a-z]/.test(password)) poolSize += 26;
-    if (/[A-Z]/.test(password)) poolSize += 26;
-    if (/[0-9]/.test(password)) poolSize += 10;
-    if (/[^a-zA-Z0-9]/.test(password)) poolSize += 32;
-    return poolSize;
-  }
-
-  function formatCrackTime(entropy) {
-    if (!entropy) return '---';
-
-    var guessesPerSecond = 10000000000;
-    var seconds = Math.pow(2, entropy) / guessesPerSecond;
-    var units = [
-      { label: 'ثانیه', value: 1 },
-      { label: 'دقیقه', value: 60 },
-      { label: 'ساعت', value: 3600 },
-      { label: 'روز', value: 86400 },
-      { label: 'سال', value: 31557600 }
-    ];
-
-    if (seconds < 1) return 'کمتر از ۱ ثانیه';
-    for (var i = units.length - 1; i >= 0; i--) {
-      if (seconds >= units[i].value) {
-        var amount = seconds / units[i].value;
-        if (amount > 1000000 && units[i].label === 'سال') return 'میلیون‌ها سال';
-        return Math.round(amount).toLocaleString('fa-IR') + ' ' + units[i].label;
-      }
-    }
-    return '---';
-  }
-
   function calculateStrength(password) {
-    if (!password) return { score: 0, label: '---', level: '', entropy: 0, crackTime: '---' };
+    if (!password) return { score: 0, label: '---', level: '' };
 
     var score = 0;
     var len = password.length;
@@ -329,41 +285,17 @@
     if (uniqueRatio > 0.9) score += 1;
 
     // Entropy estimate
-    var poolSize = estimatePoolSize(password);
+    var poolSize = 0;
+    if (/[a-z]/.test(password)) poolSize += 26;
+    if (/[A-Z]/.test(password)) poolSize += 26;
+    if (/[0-9]/.test(password)) poolSize += 10;
+    if (/[^a-zA-Z0-9]/.test(password)) poolSize += 32;
     var entropy = len * (Math.log(poolSize || 1) / Math.log(2));
-    var crackTime = formatCrackTime(entropy);
 
-    if (entropy < 28) return { score: 1, label: 'ضعیف', level: 'weak', entropy: entropy, crackTime: crackTime };
-    if (entropy < 45) return { score: 2, label: 'متوسط', level: 'fair', entropy: entropy, crackTime: crackTime };
-    if (entropy < 60) return { score: 3, label: 'خوب', level: 'good', entropy: entropy, crackTime: crackTime };
-    return { score: 4, label: 'قوی 💪', level: 'strong', entropy: entropy, crackTime: crackTime };
-  }
-
-  function buildAudit(password, strength) {
-    return [
-      { ok: password.length >= 16, text: 'طول حداقل ۱۶ کاراکتر' },
-      { ok: /[a-z]/.test(password) && /[A-Z]/.test(password), text: 'ترکیب حروف بزرگ و کوچک' },
-      { ok: /[0-9]/.test(password), text: 'دارای عدد' },
-      { ok: /[^a-zA-Z0-9]/.test(password) || optPronounceable.checked, text: 'نماد یا حالت خوانای امن' },
-      { ok: strength.entropy >= 80 && !hasSequential(password), text: 'آنتروپی بالا و بدون الگوی ترتیبی' }
-    ];
-  }
-
-  function updateAudit(password, strength) {
-    if (!auditList || !auditScore) return;
-
-    var checks = buildAudit(password || '', strength || calculateStrength(password));
-    var passed = 0;
-    var html = '';
-    for (var i = 0; i < checks.length; i++) {
-      if (checks[i].ok) passed++;
-      html += '<div class="audit-item ' + (checks[i].ok ? 'ok' : 'warn') + '">' +
-        '<span>' + (checks[i].ok ? '✅' : '⚠️') + '</span>' +
-        '<span>' + checks[i].text + '</span>' +
-        '</div>';
-    }
-    auditScore.textContent = passed + '/' + checks.length;
-    auditList.innerHTML = html;
+    if (entropy < 28) return { score: 1, label: 'ضعیف', level: 'weak' };
+    if (entropy < 45) return { score: 2, label: 'متوسط', level: 'fair' };
+    if (entropy < 60) return { score: 3, label: 'خوب', level: 'good' };
+    return { score: 4, label: 'قوی 💪', level: 'strong' };
   }
 
   // ====== Update Strength Display ======
@@ -372,9 +304,6 @@
     strengthFill.className = 'strength-fill' + (strength.level ? ' ' + strength.level : '');
     strengthText.className = 'strength-text' + (strength.level ? ' ' + strength.level : '');
     strengthText.textContent = strength.label;
-    if (entropyValue) entropyValue.textContent = Math.round(strength.entropy || 0).toLocaleString('fa-IR') + ' بیت';
-    if (crackTimeValue) crackTimeValue.textContent = strength.crackTime;
-    updateAudit(password, strength);
   }
 
   // ====== Copy to Clipboard ======
@@ -507,37 +436,20 @@
     } catch (e) { /* ignore */ }
   }
 
-  function applyProfile(name) {
-    var profile = PROFILES[name];
-    if (!profile) return;
-
-    lengthSlider.value = profile.length;
-    lengthValue.textContent = profile.length;
-    optUppercase.checked = profile.uppercase;
-    optLowercase.checked = profile.lowercase;
-    optNumbers.checked = profile.numbers;
-    optSymbols.checked = profile.symbols;
-    optNoAmbiguous.checked = profile.noAmbiguous;
-    optNoDuplicate.checked = profile.noDuplicate;
-    optNoSequential.checked = profile.noSequential;
-    optPronounceable.checked = profile.pronounceable;
-    handleGenerate(true);
-  }
-
   // ====== Main Generate Handler ======
-  function handleGenerate(saveToHistory) {
+  function handleGenerate() {
     var pwd = generatePassword();
     if (pwd) {
       passwordEl.value = pwd;
       updateStrength(pwd);
-      if (saveToHistory) addToHistory(pwd);
+      addToHistory(pwd);
     }
   }
 
   // ====== Event Listeners ======
-  generateBtn.addEventListener('click', function () { handleGenerate(true); });
+  generateBtn.addEventListener('click', handleGenerate);
 
-  refreshBtn.addEventListener('click', function () { handleGenerate(true); });
+  refreshBtn.addEventListener('click', handleGenerate);
 
   copyBtn.addEventListener('click', function () {
     var pwd = passwordEl.value;
@@ -562,28 +474,7 @@
 
   lengthSlider.addEventListener('input', function () {
     lengthValue.textContent = this.value;
-    handleGenerate(false);
   });
-
-  for (var p = 0; p < presetButtons.length; p++) {
-    presetButtons[p].addEventListener('click', function () {
-      lengthSlider.value = this.getAttribute('data-length');
-      lengthValue.textContent = lengthSlider.value;
-      handleGenerate(true);
-    });
-  }
-
-  for (var pr = 0; pr < profileButtons.length; pr++) {
-    profileButtons[pr].addEventListener('click', function () {
-      applyProfile(this.getAttribute('data-profile'));
-    });
-  }
-
-  var optionInputs = [optUppercase, optLowercase, optNumbers, optSymbols, optNoAmbiguous, optNoDuplicate, optNoSequential, optPronounceable, excludeInput];
-  for (var o = 0; o < optionInputs.length; o++) {
-    optionInputs[o].addEventListener('change', function () { handleGenerate(false); });
-    optionInputs[o].addEventListener('keyup', function () { handleGenerate(false); });
-  }
 
   clearHistoryBtn.addEventListener('click', function () {
     history = [];
@@ -596,9 +487,6 @@
     window.__passwordGenerator = {
       generatePassword: generatePassword,
       calculateStrength: calculateStrength,
-      formatCrackTime: formatCrackTime,
-      buildAudit: buildAudit,
-      applyProfile: applyProfile,
       hasSequential: hasSequential,
       getCharPool: getCharPool,
       escapeHtml: escapeHtml,
@@ -609,6 +497,6 @@
 
   // Auto-generate on load
   loadHistory();
-  handleGenerate(true);
+  handleGenerate();
 
 })();
