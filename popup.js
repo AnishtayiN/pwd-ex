@@ -47,15 +47,19 @@
 
   // ====== Secure Random (fallback for old Chrome) ======
   function secureRandom(max) {
-    var arr = new Uint32Array(1);
-    if (window.crypto && window.crypto.getRandomValues) {
-      window.crypto.getRandomValues(arr);
-    } else if (window.msCrypto) {
-      window.msCrypto.getRandomValues(arr);
-    } else {
-      arr[0] = Math.floor(Math.random() * max);
+    if (!max || max < 1) return 0;
+
+    var cryptoObj = window.crypto || window.msCrypto;
+    if (cryptoObj && cryptoObj.getRandomValues) {
+      var arr = new Uint32Array(1);
+      var limit = Math.floor(0x100000000 / max) * max;
+      do {
+        cryptoObj.getRandomValues(arr);
+      } while (arr[0] >= limit);
+      return arr[0] % max;
     }
-    return arr[0] % max;
+
+    return Math.floor(Math.random() * max);
   }
 
   // ====== Shuffle Array (Fisher-Yates) ======
@@ -70,54 +74,107 @@
     return arr;
   }
 
+  function uniqueChars(str) {
+    var seen = {};
+    var out = '';
+    for (var i = 0; i < str.length; i++) {
+      if (!seen[str[i]]) {
+        seen[str[i]] = true;
+        out += str[i];
+      }
+    }
+    return out;
+  }
+
+  function removeChars(str, charsToRemove) {
+    var out = '';
+    for (var i = 0; i < str.length; i++) {
+      if (charsToRemove.indexOf(str[i]) === -1) out += str[i];
+    }
+    return out;
+  }
+
+  function getExcludedChars() {
+    var excluded = excludeInput.value || '';
+    if (optNoAmbiguous.checked) excluded += CHARS_AMBIGUOUS;
+    return uniqueChars(excluded);
+  }
+
+  function filterSet(charSet) {
+    return uniqueChars(removeChars(charSet, getExcludedChars()));
+  }
+
+  function getRequiredSets() {
+    var sets = [];
+    if (optUppercase.checked) sets.push(filterSet(CHARS_UPPERCASE));
+    if (optLowercase.checked) sets.push(filterSet(CHARS_LOWERCASE));
+    if (optNumbers.checked) sets.push(filterSet(CHARS_NUMBERS));
+    if (optSymbols.checked) sets.push(filterSet(CHARS_SYMBOLS));
+
+    var filtered = [];
+    for (var i = 0; i < sets.length; i++) {
+      if (sets[i].length > 0) filtered.push(sets[i]);
+    }
+    return filtered;
+  }
+
   // ====== Get Character Pool ======
   function getCharPool() {
+    var sets = getRequiredSets();
     var pool = '';
-    if (optUppercase.checked) pool += CHARS_UPPERCASE;
-    if (optLowercase.checked) pool += CHARS_LOWERCASE;
-    if (optNumbers.checked) pool += CHARS_NUMBERS;
-    if (optSymbols.checked) pool += CHARS_SYMBOLS;
+    for (var i = 0; i < sets.length; i++) pool += sets[i];
+    return uniqueChars(pool);
+  }
 
-    // Exclude ambiguous characters
-    if (optNoAmbiguous.checked) {
-      var clean = '';
-      for (var i = 0; i < pool.length; i++) {
-        if (CHARS_AMBIGUOUS.indexOf(pool[i]) === -1) {
-          clean += pool[i];
-        }
+  function pickChar(charSet, used) {
+    var available = charSet;
+    if (used) {
+      available = '';
+      for (var i = 0; i < charSet.length; i++) {
+        if (!used[charSet[i]]) available += charSet[i];
       }
-      pool = clean;
     }
+    if (available.length === 0) return '';
+    return available[secureRandom(available.length)];
+  }
 
-    // Exclude custom characters
-    var exclude = excludeInput.value;
-    if (exclude.length > 0) {
-      var clean2 = '';
-      for (var j = 0; j < pool.length; j++) {
-        if (exclude.indexOf(pool[j]) === -1) {
-          clean2 += pool[j];
-        }
-      }
-      pool = clean2;
-    }
-
-    return pool;
+  function markUsed(used, ch) {
+    if (used && ch) used[ch] = true;
   }
 
   // ====== Generate Pronounceable Password ======
   function generatePronounceable(len) {
+    var consonants = filterSet(optUppercase.checked ? CONSONANTS + CONSONANTS_U : CONSONANTS);
+    var vowels = filterSet(optUppercase.checked ? VOWELS + VOWELS_U : VOWELS);
+    var allLetters = uniqueChars(consonants + vowels);
+    var used = optNoDuplicate.checked ? {} : null;
     var password = '';
-    var useUpper = optUppercase.checked;
-    for (var i = 0; i < len; i++) {
-      var isConsonant = (i % 2 === 0);
-      if (isConsonant) {
-        var cSet = useUpper ? (secureRandom(2) === 0 ? CONSONANTS_U : CONSONANTS) : CONSONANTS;
-        password += cSet[secureRandom(cSet.length)];
-      } else {
-        var vSet = useUpper ? (secureRandom(2) === 0 ? VOWELS_U : VOWELS) : VOWELS;
-        password += vSet[secureRandom(vSet.length)];
-      }
+    var i, charSet, nextChar;
+
+    if (!optUppercase.checked && !optLowercase.checked) {
+      alert('برای حالت قابل تلفظ، حداقل حروف بزرگ یا کوچک را انتخاب کنید.');
+      return '';
     }
+
+    if (allLetters.length === 0) {
+      alert('با تنظیمات فعلی هیچ حرف قابل استفاده‌ای باقی نمانده است.');
+      return '';
+    }
+
+    if (optNoDuplicate.checked && len > allLetters.length) {
+      alert('طول رمز (' + len + ') از تعداد حروف قابل تلفظ موجود (' + allLetters.length + ') بیشتر است. لطفاً طول رمز را کمتر کنید.');
+      return '';
+    }
+
+    for (i = 0; i < len; i++) {
+      charSet = (i % 2 === 0) ? consonants : vowels;
+      if (charSet.length === 0) charSet = allLetters;
+      nextChar = pickChar(charSet, used) || pickChar(allLetters, used);
+      if (!nextChar) return '';
+      password += nextChar;
+      markUsed(used, nextChar);
+    }
+
     return password;
   }
 
@@ -136,16 +193,28 @@
   // ====== Generate Password ======
   function generatePassword() {
     var len = parseInt(lengthSlider.value, 10);
+    var password;
+    var maxAttempts = 100;
+    var attempt = 0;
 
     // Pronounceable mode
     if (optPronounceable.checked) {
-      var pwd = generatePronounceable(len);
-      return pwd;
+      do {
+        attempt++;
+        password = generatePronounceable(len);
+      } while (password && optNoSequential.checked && hasSequential(password) && attempt < maxAttempts);
+      return password;
     }
 
+    var requiredSets = getRequiredSets();
     var pool = getCharPool();
-    if (pool.length === 0) {
+    if (requiredSets.length === 0 || pool.length === 0) {
       alert('لطفاً حداقل یک نوع کاراکتر انتخاب کنید!');
+      return '';
+    }
+
+    if (len < requiredSets.length) {
+      alert('طول رمز باید حداقل برابر تعداد گروه‌های کاراکتری انتخاب‌شده (' + requiredSets.length + ') باشد.');
       return '';
     }
 
@@ -155,27 +224,28 @@
       return '';
     }
 
-    var password;
-    var maxAttempts = 100;
-    var attempt = 0;
-
     do {
       attempt++;
-      password = '';
+      var chars = [];
+      var used = optNoDuplicate.checked ? {} : null;
+      var i, j, ch;
 
-      if (optNoDuplicate.checked) {
-        // Pick without replacement
-        var available = pool.split('');
-        available = shuffle(available);
-        for (var i = 0; i < len; i++) {
-          password += available[i];
-        }
-      } else {
-        // Pick with replacement
-        for (var j = 0; j < len; j++) {
-          password += pool[secureRandom(pool.length)];
-        }
+      for (i = 0; i < requiredSets.length; i++) {
+        ch = pickChar(requiredSets[i], used);
+        if (!ch) ch = pickChar(pool, used);
+        if (!ch) return '';
+        chars.push(ch);
+        markUsed(used, ch);
       }
+
+      for (j = chars.length; j < len; j++) {
+        ch = pickChar(pool, used);
+        if (!ch) return '';
+        chars.push(ch);
+        markUsed(used, ch);
+      }
+
+      password = shuffle(chars).join('');
     } while (
       optNoSequential.checked &&
       hasSequential(password) &&
@@ -220,7 +290,7 @@
     if (/[A-Z]/.test(password)) poolSize += 26;
     if (/[0-9]/.test(password)) poolSize += 10;
     if (/[^a-zA-Z0-9]/.test(password)) poolSize += 32;
-    var entropy = len * Math.log2(poolSize || 1);
+    var entropy = len * (Math.log(poolSize || 1) / Math.log(2));
 
     if (entropy < 28) return { score: 1, label: 'ضعیف', level: 'weak' };
     if (entropy < 45) return { score: 2, label: 'متوسط', level: 'fair' };
@@ -237,12 +307,24 @@
   }
 
   // ====== Copy to Clipboard ======
-  function copyToClipboard(text) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text);
-      return true;
+  function copyToClipboard(text, callback) {
+    function done(success) {
+      if (callback) callback(success);
     }
-    // Fallback for older Chrome
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        done(true);
+      }, function () {
+        fallbackCopy(text, done);
+      });
+      return;
+    }
+
+    fallbackCopy(text, done);
+  }
+
+  function fallbackCopy(text, callback) {
     var textarea = document.createElement('textarea');
     textarea.value = text;
     textarea.style.position = 'fixed';
@@ -250,13 +332,11 @@
     document.body.appendChild(textarea);
     textarea.select();
     try {
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      return true;
+      callback(document.execCommand('copy'));
     } catch (e) {
-      document.body.removeChild(textarea);
-      return false;
+      callback(false);
     }
+    document.body.removeChild(textarea);
   }
 
   // ====== Show Toast ======
@@ -277,6 +357,7 @@
   // ====== Add to History ======
   function addToHistory(pwd) {
     if (!pwd) return;
+    if (history[0] === pwd) return;
     history.unshift(pwd);
     if (history.length > MAX_HISTORY) history.pop();
     renderHistory();
@@ -306,16 +387,16 @@
     for (var j = 0; j < copyBtns.length; j++) {
       copyBtns[j].addEventListener('click', function () {
         var idx = parseInt(this.getAttribute('data-index'), 10);
-        if (copyToClipboard(history[idx])) {
-          showToast('✅ رمز کپی شد!');
-        }
+        copyToClipboard(history[idx], function (success) {
+          showToast(success ? '✅ رمز کپی شد!' : '❌ کپی ناموفق بود');
+        });
       });
     }
   }
 
   // ====== Escape HTML ======
   function escapeHtml(str) {
-    return str.replace(/&/g, '&amp;')
+    return String(str).replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
@@ -337,16 +418,19 @@
     try {
       if (typeof chrome !== 'undefined' && chrome.storage) {
         chrome.storage.local.get('pwHistory', function (data) {
-          if (data && data.pwHistory) {
-            history = data.pwHistory;
+          if (data && data.pwHistory && data.pwHistory.constructor === Array) {
+            history = data.pwHistory.slice(0, MAX_HISTORY);
             renderHistory();
           }
         });
       } else if (window.localStorage) {
         var stored = localStorage.getItem('pwHistory');
         if (stored) {
-          history = JSON.parse(stored);
-          renderHistory();
+          var parsed = JSON.parse(stored);
+          if (parsed && parsed.constructor === Array) {
+            history = parsed.slice(0, MAX_HISTORY);
+            renderHistory();
+          }
         }
       }
     } catch (e) { /* ignore */ }
@@ -373,15 +457,19 @@
       showToast('⚠️ ابتدا رمزی بسازید!');
       return;
     }
-    if (copyToClipboard(pwd)) {
-      copyBtn.classList.add('copied');
-      copyBtn.textContent = '✅';
-      showToast('✅ رمز کپی شد!');
-      setTimeout(function () {
-        copyBtn.classList.remove('copied');
-        copyBtn.textContent = '📋';
-      }, 1500);
-    }
+    copyToClipboard(pwd, function (success) {
+      if (success) {
+        copyBtn.classList.add('copied');
+        copyBtn.textContent = '✅';
+        showToast('✅ رمز کپی شد!');
+        setTimeout(function () {
+          copyBtn.classList.remove('copied');
+          copyBtn.textContent = '📋';
+        }, 1500);
+      } else {
+        showToast('❌ کپی ناموفق بود');
+      }
+    });
   });
 
   lengthSlider.addEventListener('input', function () {
@@ -394,6 +482,18 @@
     saveHistory();
     showToast('🗑️ تاریخچه پاک شد');
   });
+
+  if (window.__PWD_EX_TEST__) {
+    window.__passwordGenerator = {
+      generatePassword: generatePassword,
+      calculateStrength: calculateStrength,
+      hasSequential: hasSequential,
+      getCharPool: getCharPool,
+      escapeHtml: escapeHtml,
+      secureRandom: secureRandom
+    };
+    return;
+  }
 
   // Auto-generate on load
   loadHistory();
