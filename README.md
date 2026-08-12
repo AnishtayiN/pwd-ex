@@ -147,6 +147,66 @@ pwd-ex/
 4. تست‌ها را اجرا کنید.
 5. Pull Request باز کنید.
 
+
+---
+
+## 🧩 ساخت Pull Request بدون خطا
+
+اگر موقع PR زدن در GitHub یا GitHub CLI خطا دیدید، این چک‌لیست را انجام دهید:
+
+### ۱) وضعیت branch و commit را چک کنید
+
+```bash
+git status
+git branch --show-current
+git log --oneline -3
+```
+
+اگر تغییرات commit نشده دارید:
+
+```bash
+git add .
+git commit -m "Describe your change"
+```
+
+### ۲) branch را push کنید
+
+```bash
+git push -u origin HEAD
+```
+
+### ۳) اگر با `gh pr create` خطای authentication گرفتید
+
+GitHub CLI باید login شده باشد یا توکن داشته باشد:
+
+```bash
+gh auth login
+# یا
+export GH_TOKEN="YOUR_GITHUB_TOKEN"
+```
+
+بعد دوباره PR بسازید:
+
+```bash
+gh pr create --fill
+```
+
+### ۴) اگر خطای remote گرفتید
+
+remote را بررسی کنید:
+
+```bash
+git remote -v
+```
+
+اگر remote ندارید، آدرس repository خودتان را اضافه کنید:
+
+```bash
+git remote add origin https://github.com/YOUR_USERNAME/pwd-ex.git
+```
+
+> نکته: قالب آماده Pull Request داخل `.github/pull_request_template.md` اضافه شده تا GitHub هنگام باز کردن PR متن استاندارد تست و چک‌لیست را نشان دهد.
+
 ---
 
 ## 📄 مجوز
